@@ -1,664 +1,231 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>10-Week Fat-Loss Tracker — v3</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aziz & Yasmin Fit Tracker</title>
+<link rel="manifest" href="manifest.json" />
 <style>
-  :root{
-    --bg:#05060a;
-    --panel:#071127;
-    --muted:#9aa6bd;
-    --accent:#0a84ff;
-    --accent-2:#ffd24d;
-    --card:#0b1220;
-    --glass: rgba(255,255,255,0.03);
-  }
-  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;background:linear-gradient(180deg,#03040a 0%, #041025 100%);color:#eef2ff}
-  .container{max-width:820px;margin:18px auto;padding:14px}
-  header{display:flex;flex-direction:column;gap:12px;align-items:center}
-  .date-row{display:flex;flex-direction:column;align-items:center;gap:6px}
-  h1{margin:0;font-size:18px;font-weight:700}
-  .date-pick{display:flex;align-items:center;gap:10px}
-  input[type="date"]{
-    padding:10px 12px;border-radius:12px;border:0;background:var(--card);color:#fff;font-weight:600;
-    box-shadow:0 6px 18px rgba(2,6,23,0.6); font-size:15px;
-  }
-  /* banner */
-  .banner{
-    width:100%;background:linear-gradient(180deg, rgba(10,20,40,0.9), rgba(5,10,20,0.85));
-    border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(2,8,30,0.6)
-  }
-  .banner-left{display:flex;flex-direction:column}
-  .banner .small{color:var(--muted);font-size:13px}
-  .banner-right{display:flex;align-items:center;gap:12px}
-  .icon-btn{background:transparent;border:0;color:var(--muted);padding:8px;border-radius:8px;cursor:pointer}
-  .icon-btn:hover{color:var(--accent)}
-  .toggle-complete{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg, rgba(10,20,40,0.35), rgba(10,20,40,0.15));padding:6px 10px;border-radius:999px}
-  .pill-btns{display:flex;gap:12px;margin-top:12px;justify-content:center;flex-wrap:wrap}
-  .pill{background:linear-gradient(180deg, rgba(10,20,40,0.95), rgba(8,16,32,0.9));border:1px solid rgba(255,255,255,0.03);padding:12px 20px;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-  .pill.active{box-shadow:0 10px 30px rgba(10,132,255,0.12);border:1px solid rgba(10,132,255,0.14)}
-  .pill:hover{transform:translateY(-2px);transition:transform 120ms}
-  /* panels */
-  .panel{background:linear-gradient(180deg, rgba(7,12,20,0.6), rgba(6,10,18,0.55));padding:14px;border-radius:12px;margin-top:12px;border:1px solid rgba(255,255,255,0.02)}
-  .meal-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
-  .meal-name{width:120px;font-weight:700;color:#dbe9ff}
-  .options{display:flex;flex-direction:column;gap:8px}
-  label.option{display:flex;align-items:center;gap:12px;padding:10px;background:var(--glass);border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
-  label.option input[type="checkbox"]{transform:scale(1.1);accent-color:var(--accent)}
-  .cal{color:var(--muted);font-size:13px}
-  .muted{color:var(--muted);font-size:13px}
-  .row{display:flex;gap:10px;align-items:center}
-  .small-input{padding:8px;border-radius:8px;border:0;background:#071427;color:#fff}
-  /* exercise */
-  .ex-item{background:linear-gradient(180deg, rgba(2,8,20,0.5), rgba(3,10,22,0.4));padding:10px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.02)}
-  .sets-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-  .set{background:#051026;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);display:flex;gap:8px;align-items:center}
-  .set input[type="number"]{width:68px;padding:6px;border-radius:8px;border:0;background:#081524;color:#fff}
-  /* analysis grid */
-  .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .chart{background:#061026;border-radius:8px;padding:10px}
-  textarea{width:100%;height:88px;padding:8px;border-radius:8px;border:0;background:#051226;color:#fff}
-  /* settings slide panel */
-  .settings-toggle{position:relative}
-  .side-panel{
-    position:fixed;right:-420px;top:0;height:100%;width:380px;background:linear-gradient(180deg,#061026,#02101b);box-shadow:-30px 0 80px rgba(2,8,25,0.7);transition:right 260ms ease-in-out;padding:18px;z-index:1200;
-    border-left:1px solid rgba(255,255,255,0.02)
-  }
-  .side-panel.open{right:0}
-  .side-panel h3{margin:0 0 8px 0}
-  .side-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-  .link-btn{display:block;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);color:#fff;text-align:center;text-decoration:none}
-  /* responsive */
-  @media (max-width:720px){
-    .meal-name{width:100px}
-    .analysis-grid{grid-template-columns:1fr}
-    .side-panel{width:100%;right:-100%}
-  }
+:root{
+  --bg:#05060a;--panel:#071127;--muted:#9aa6bd;--accent:#0a84ff;--accent-2:#ffd24d;
+  --card:#0b1220;--glass:rgba(255,255,255,0.03);
+}
+html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+background:linear-gradient(180deg,#03040a 0%, #041025 100%);color:#eef2ff;}
+.container{max-width:820px;margin:18px auto;padding:14px}
+header{display:flex;flex-direction:column;gap:12px;align-items:center}
+h1{margin:0;font-size:20px;font-weight:700}
+.date-pick input[type="date"]{padding:10px 12px;border-radius:12px;border:0;background:var(--card);color:#fff;
+box-shadow:0 6px 18px rgba(2,6,23,0.6);font-size:15px}
+.banner{width:100%;background:linear-gradient(180deg,rgba(10,20,40,0.9),rgba(5,10,20,0.85));
+border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+box-shadow:0 8px 30px rgba(2,8,30,0.6)}
+.banner-left{display:flex;flex-direction:column}
+.small{color:var(--muted);font-size:13px}
+.banner-right{display:flex;align-items:center;gap:10px}
+.icon-btn{background:transparent;border:0;color:var(--muted);padding:8px;border-radius:8px;cursor:pointer}
+.icon-btn:hover{color:var(--accent)}
+.pill-btns{display:flex;gap:12px;margin-top:12px;justify-content:center;flex-wrap:wrap}
+.pill{background:linear-gradient(180deg,rgba(10,20,40,0.95),rgba(8,16,32,0.9));border:1px solid rgba(255,255,255,0.03);
+padding:12px 20px;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+.pill.active{border:1px solid rgba(10,132,255,0.14)}
+.panel{background:linear-gradient(180deg,rgba(7,12,20,0.6),rgba(6,10,18,0.55));
+padding:14px;border-radius:12px;margin-top:12px;border:1px solid rgba(255,255,255,0.02)}
+.meal-row{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.meal-name{width:120px;font-weight:700;color:#dbe9ff}
+.options{display:flex;flex-direction:column;gap:8px}
+label.option{display:flex;align-items:center;gap:12px;padding:10px;background:var(--glass);border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+label.option input[type="checkbox"]{transform:scale(1.1);accent-color:var(--accent)}
+.cal{color:var(--muted);font-size:13px}
+.muted{color:var(--muted);font-size:13px}
+.row{display:flex;gap:10px;align-items:center}
+.small-input{padding:8px;border-radius:8px;border:0;background:#071427;color:#fff}
+.ex-item{background:linear-gradient(180deg,rgba(2,8,20,0.5),rgba(3,10,22,0.4));padding:10px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.02)}
+.sets-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.set{background:#051026;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);display:flex;gap:8px;align-items:center}
+.set input[type="number"]{width:68px;padding:6px;border-radius:8px;border:0;background:#081524;color:#fff}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chart{background:#061026;border-radius:8px;padding:10px}
+textarea{width:100%;height:88px;padding:8px;border-radius:8px;border:0;background:#051226;color:#fff}
+@media(max-width:720px){.analysis-grid{grid-template-columns:1fr}}
+/* Welcome overlay */
+#welcomeOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#05060a;display:flex;flex-direction:column;
+align-items:center;justify-content:center;z-index:2000;color:#fff}
+#welcomeOverlay button{margin:10px;padding:12px 24px;font-weight:700;font-size:18px;border:0;border-radius:12px;
+background:var(--accent);color:#fff;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="date-row">
-      <h1>10-Week Fat-Loss Tracker</h1>
-      <div style="color:var(--muted);font-size:13px" id="dateDisplay"></div>
-      <div class="date-pick">
-        <input type="date" id="datePicker" />
-      </div>
-    </div>
+<div id="welcomeOverlay">
+  <h1>Welcome to the Aziz & Yasmin Fit Tracker</h1>
+  <p style="color:#9aa6bd;margin-bottom:18px">Choose your profile</p>
+  <div>
+    <button onclick="selectUser('Aziz')">Aziz</button>
+    <button onclick="selectUser('Yasmin')">Yasmin</button>
+  </div>
+</div>
 
+<div class="container" id="appContainer" style="display:none">
+  <header>
     <div class="banner">
       <div class="banner-left">
-        <div id="currentWeightText" style="font-weight:800">Weight: — kg</div>
-        <div class="small" id="weightDeltaText">Lost: — kg</div>
+        <div id="profileTag" style="font-weight:800">👤 — | Weight: — kg</div>
+        <div id="weightDeltaText" class="small">Lost: — kg</div>
       </div>
-
       <div class="banner-right">
-        <div style="text-align:right">
-          <div class="small" id="weeksLeftText">Weeks left: —</div>
-          <div class="small" id="streakText">Streak: — days</div>
-        </div>
-
-        <!-- day complete compact toggle -->
-        <div class="toggle-complete" title="Toggle day complete (helps streak)">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-            <input id="dayCompleteToggle" type="checkbox" style="width:20px;height:20px;accent-color:var(--accent)" />
-            <span class="small">Done</span>
-          </label>
-        </div>
-
-        <!-- settings icon -->
-        <div style="display:flex;align-items:center">
-          <button class="icon-btn" id="openSettings" title="Open settings (Export / Import / Clear)">
-            ⚙️
-          </button>
-        </div>
+        <button class="icon-btn" title="Switch User" onclick="switchUser()">👤</button>
       </div>
     </div>
 
     <div class="pill-btns" role="tablist">
-      <button class="pill active" id="tabFood">🍽️ Food</button>
-      <button class="pill" id="tabExercise">🏋️ Exercise</button>
-      <button class="pill" id="tabAnalysis">📊 Analysis</button>
+      <button class="pill active" id="tabFood" onclick="showTab('food')">🍽️ Food</button>
+      <button class="pill" id="tabExercise" onclick="showTab('exercise')">🏋️ Exercise</button>
+      <button class="pill" id="tabAnalysis" onclick="showTab('analysis')">📊 Analysis</button>
     </div>
   </header>
 
-  <!-- FOOD PANEL -->
   <div id="foodPanel" class="panel" style="display:block">
-    <div class="muted">Meal timings — Breakfast: 09:30, Lunch: 13:30, Snack: 16:00, Post-workout: 19:30, Dinner: 21:00</div>
-    <hr style="opacity:0.06;margin:10px 0"/>
-    <div class="meal-row">
-      <div class="meal-name">Breakfast</div>
-      <div style="flex:1"><div id="breakfastOptions" class="options"></div></div>
-    </div>
-    <div class="meal-row">
-      <div class="meal-name">Lunch</div>
-      <div style="flex:1"><div id="lunchOptions" class="options"></div></div>
-    </div>
-    <div class="meal-row">
-      <div class="meal-name">Snack</div>
-      <div style="flex:1"><div id="snackOptions" class="options"></div></div>
-    </div>
-    <div class="meal-row">
-      <div class="meal-name">Post-WO</div>
-      <div style="flex:1"><div id="postOptions" class="options"></div></div>
-    </div>
-    <div class="meal-row">
-      <div class="meal-name">Dinner</div>
-      <div style="flex:1"><div id="dinnerOptions" class="options"></div></div>
-    </div>
-
-    <div style="height:8px"></div>
-    <div class="row">
-      <input id="customMealName" class="small-input" placeholder="Custom meal name (for this date)" />
-      <input id="customMealCals" type="number" class="small-input" placeholder="kcal" style="width:110px" />
-      <select id="customMealTarget" class="small-input" style="width:130px">
-        <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="snack">Snack</option><option value="post">Post-WO</option><option value="dinner">Dinner</option>
-      </select>
-      <button class="pill" style="padding:8px 12px" onclick="addCustomMeal()">Add</button>
-    </div>
-
-    <div style="height:12px"></div>
-    <div class="muted">Total calories selected for selected date: <strong id="calTotal">0 kcal</strong></div>
+    <div class="muted">Meal timings — Breakfast 09:30 · Lunch 13:30 · Snack 16:00 · Post-WO 19:30 · Dinner 21:00</div>
+    <hr style="opacity:.06;margin:10px 0">
+    <div id="foodContent">Loading meals…</div>
   </div>
 
-  <!-- EXERCISE PANEL -->
   <div id="exercisePanel" class="panel" style="display:none">
-    <div class="muted">Workout time: 18:00–19:30. Mark sets as done and enter reps/weight used. Session burn can be edited below.</div>
-    <hr style="opacity:0.06;margin:10px 0"/>
-    <div id="exerciseList"></div>
-    <div style="height:8px"></div>
-    <div class="row">
-      <label class="muted" style="min-width:150px">Estimated calories burned (session)</label>
-      <input id="sessionBurn" type="number" class="small-input" style="width:140px" />
-    </div>
+    <div class="muted">Workout time 18:00–19:30 · Edit sets, reps, weights</div>
+    <hr style="opacity:.06;margin:10px 0">
+    <div id="exerciseList">Loading workouts…</div>
   </div>
 
-  <!-- ANALYSIS PANEL -->
   <div id="analysisPanel" class="panel" style="display:none">
-    <h3 style="margin:6px 0">Weekly Analysis</h3>
-    <div class="analysis-grid">
-      <div>
-        <strong>Weekly Calories</strong>
-        <div id="weeklyCalText" class="muted"></div>
-        <div style="height:8px"></div>
-        <strong>Workout Burns</strong>
-        <div id="weeklyBurnText" class="muted"></div>
-        <div style="height:8px"></div>
-        <strong>Net (Eaten − Burn)</strong>
-        <div id="weeklyNetText" class="muted"></div>
-      </div>
-      <div>
-        <strong>Weight Progress</strong>
-        <div class="muted" style="margin-bottom:6px">Target: 87 → 77 kg (10 weeks).</div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-          <label class="muted">Week #</label>
-          <select id="weekSelect" class="small-input"></select>
-          <input id="weekWeight" type="number" class="small-input" placeholder="kg" style="width:110px"/>
-          <button class="pill" onclick="saveWeekWeight()">Save</button>
-        </div>
-        <canvas id="weightChart" width="420" height="160" class="chart"></canvas>
-        <div id="onTrackMsg" style="margin-top:10px"></div>
-      </div>
-    </div>
-    <div style="height:12px"></div>
-    <div>
-      <strong>Weekly Notes</strong>
-      <textarea id="weeklyNotes" placeholder="Auto-summary appears here..."></textarea>
-      <div style="height:8px"></div>
-      <div style="display:flex;gap:8px">
-        <button class="pill" onclick="generateSummary()">Generate Summary</button>
-        <button class="pill" onclick="clearAllData()">Clear All Data</button>
-      </div>
-    </div>
+    <h3>Weekly Analysis</h3>
+    <canvas id="weightChart" width="400" height="160" class="chart"></canvas>
+    <div id="onTrackMsg" style="margin-top:10px"></div>
   </div>
-</div>
-
-<!-- SETTINGS SLIDE-IN -->
-<div id="sidePanel" class="side-panel" aria-hidden="true">
-  <h3>Settings</h3>
-  <div class="side-row">
-    <button class="link-btn" onclick="exportJSON()">⬇️ Export all data (JSON)</button>
-  </div>
-  <div class="side-row">
-    <label class="link-btn" style="cursor:pointer">
-      ⬆️ Import JSON
-      <input id="importFile" type="file" accept="application/json" style="display:none" onchange="importJSON(event)" />
-    </label>
-  </div>
-  <div class="side-row">
-    <button class="link-btn" onclick="clearAllData()">🧹 Clear all saved data</button>
-  </div>
-  <div style="height:12px" class="muted">Data saved only on this device (localStorage). Use export to backup.</div>
-  <div style="height:18px"></div>
-  <div class="muted">App version: v3 — Dark Pro</div>
-  <div style="height:8px"></div>
-  <button class="pill" onclick="closeSettings()" style="width:100%">Close</button>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const startDate = new Date("2025-11-10"); // day1
-const totalWeeks = 10;
-const STORAGE_KEY = "fit10_tracker_v3";
-const dailyCalorieTarget = 2000;
-const targetStartWeight = 87, targetEndWeight = 77;
-
-/* ===== DEFAULT FOOD & WORKOUTS ===== */
-const FOOD_OPTIONS = {
-  breakfast:[
-    {id:'mine',label:'Your breakfast — 2 egg whites + 1 whole egg + 1 toast + 1 tsp peanut butter + 1 fruit',kcal:420},
-    {id:'oats',label:'Oats with whey + berries',kcal:420},
-    {id:'scrambled',label:'Scrambled eggs + toast + peanut butter',kcal:430},
-    {id:'yogurt',label:'Greek yogurt + fruit + chia',kcal:380}
-  ],
-  lunch:[
-    {id:'chickenrice',label:'Chicken kheema + 1 cup basmati rice + veggies',kcal:650},
-    {id:'chickenbrown',label:'Grilled chicken + brown rice + salad',kcal:600},
-    {id:'paneer',label:'Paneer + veggies + ½ cup rice',kcal:600},
-    {id:'dalveg',label:'Dal + veggies + ½ cup rice',kcal:520}
-  ],
-  snack:[
-    {id:'boiledegg',label:'1 boiled egg + 1 fruit',kcal:140},
-    {id:'nuts',label:'10 almonds + green tea',kcal:120},
-    {id:'proteinbar',label:'Low-sugar protein bar',kcal:200}
-  ],
-  post:[
-    {id:'whey',label:'Whey isolate + ½ banana',kcal:220},
-    {id:'whey_oats',label:'Whey + oats (light)',kcal:300}
-  ],
-  dinner:[
-    {id:'tofu',label:'Tofu stir-fry + soup',kcal:480},
-    {id:'paneer_dish',label:'Paneer curry + veggies',kcal:550},
-    {id:'omelette',label:'Egg omelette + salad',kcal:420},
-    {id:'light',label:'Soup or light khichdi',kcal:350}
-  ]
-};
-
-const WORKOUTS = {
-  1:{name:'Chest + Triceps + Core', exercises:[
-    {title:'Bench Press',sets:4,reps:'10-12'},
-    {title:'Incline DB Press',sets:3,reps:'10-12'},
-    {title:'Cable Fly',sets:3,reps:'12-15'},
-    {title:'Tricep Pushdowns',sets:3,reps:'12-15'}
-  ]},
-  2:{name:'Back + Biceps + Core', exercises:[
-    {title:'Lat Pulldown / Pull-ups',sets:4,reps:'10-12'},
-    {title:'Seated Cable Row',sets:3,reps:'10-12'},
-    {title:'DB One-Arm Row',sets:3,reps:'12'},
-    {title:'Barbell Bicep Curl',sets:3,reps:'12'}
-  ]},
-  3:{name:'Legs + Glutes', exercises:[
-    {title:'Barbell Squats',sets:4,reps:'10'},
-    {title:'Leg Press',sets:3,reps:'12'},
-    {title:'Lunges',sets:3,reps:'10/leg'},
-    {title:'Hip Thrust',sets:3,reps:'15'}
-  ]},
-  4:{name:'Shoulders + Abs', exercises:[
-    {title:'Overhead Press',sets:4,reps:'10-12'},
-    {title:'Lateral Raises',sets:3,reps:'12-15'},
-    {title:'Rear Delt Fly',sets:3,reps:'12'},
-    {title:'Russian Twists',sets:3,reps:'20'}
-  ]},
-  5:{name:'Full-Body HIIT', exercises:[
-    {title:'Burpees',sets:3,reps:'10'},
-    {title:'Kettlebell Swings',sets:3,reps:'15'},
-    {title:'Jump Squats',sets:3,reps:'20'}
-  ]},
-  6:{name:'Core + Cardio', exercises:[
-    {title:'Crunches',sets:3,reps:'20'},
-    {title:'Leg Raises',sets:3,reps:'15'},
-    {title:'Plank',sets:3,reps:'1 min'}
-  ]},
-  7:{name:'Rest / Recovery', exercises:[
-    {title:'Stretching / Yoga',sets:1,reps:'30 min'},
-    {title:'Brisk Walk',sets:1,reps:'20 min'}
-  ]}
-};
-
-/* ===== STORAGE ===== */
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return {meals:{},exercises:{},weights:{},notes:{},completedDays:{}};
-    return JSON.parse(raw);
-  }catch(e){ return {meals:{},exercises:{},weights:{},notes:{},completedDays:{}}; }
+/* ---------- USER HANDLING ---------- */
+const USERS=["Aziz","Yasmin"];
+let currentUser=null;
+function storageKey(){return "fit10_tracker_v3_"+currentUser.toLowerCase();}
+function selectUser(u){
+  currentUser=u;
+  localStorage.setItem("currentUser",u);
+  document.getElementById("welcomeOverlay").style.display="none";
+  document.getElementById("appContainer").style.display="block";
+  loadUserState(); updateBanner();
 }
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-const state = loadState();
-
-/* ===== UTIL ===== */
-function formatISO(d){ return d.toISOString().split('T')[0]; }
-function getDayNumber(date){
-  const diff = Math.floor((date - startDate)/(1000*60*60*24));
-  return ((diff % 7)+7)%7 + 1;
+function switchUser(){
+  localStorage.removeItem("currentUser");
+  location.reload();
 }
-function setDateToInput(d){
-  const iso = formatISO(d);
-  document.getElementById('datePicker').value = iso;
-  document.getElementById('dateDisplay').textContent = d.toLocaleDateString(undefined,{weekday:'short', year:'numeric', month:'short', day:'numeric'});
-}
-setDateToInput(new Date());
-
-/* date change */
-document.getElementById('datePicker').addEventListener('change', ()=>{
-  const d = new Date(document.getElementById('datePicker').value);
-  setDateToInput(d);
-  renderForDate(d);
-  updateBanner();
+window.addEventListener("DOMContentLoaded",()=>{
+  const saved=localStorage.getItem("currentUser");
+  if(saved&&USERS.includes(saved)){currentUser=saved;selectUser(saved);}
 });
 
-/* ===== MEALS RENDER & MULTI-SELECT ===== */
-function renderMealOptions(date){
-  const dk = formatISO(date);
-  if(!state.meals[dk]) state.meals[dk] = {};
-  const meals = state.meals[dk];
-
-  ['breakfast','lunch','snack','post','dinner'].forEach(mealKey=>{
-    const container = document.getElementById(mealKey+'Options');
-    container.innerHTML = '';
-    // combine default + custom
-    let opts = FOOD_OPTIONS[mealKey].map(o=>({...o, custom:false}));
-    if(meals.custom && meals.custom.length){
-      const customs = meals.custom.filter(c=>c.target===mealKey).map(c=>({id:c.id,label:c.label+' (custom)',kcal:c.kcal,custom:true}));
-      opts = opts.concat(customs);
-    }
-    opts.forEach(opt=>{
-      const lab = document.createElement('label'); lab.className='option';
-      const left = document.createElement('div'); left.style.display='flex'; left.style.alignItems='center';
-      const cb = document.createElement('input'); cb.type='checkbox'; cb.dataset.meal=mealKey; cb.dataset.id=opt.id;
-      const checked = meals[mealKey] && meals[mealKey].selected ? meals[mealKey].selected.includes(opt.id) : false;
-      cb.checked = !!checked;
-      cb.addEventListener('change', function(){
-        const dateKey = formatISO(new Date(document.getElementById('datePicker').value));
-        if(!state.meals[dateKey]) state.meals[dateKey] = {};
-        const nodes = container.querySelectorAll('input[type="checkbox"]');
-        const selIds = [];
-        nodes.forEach(n=>{ if(n.checked) selIds.push(n.dataset.id); });
-        state.meals[dateKey][mealKey] = { selected: selIds };
-        saveState(); updateCalTotalForDate(new Date(document.getElementById('datePicker').value));
-        if(document.getElementById('analysisPanel').style.display!=='none') renderAnalysisForDate(new Date(document.getElementById('datePicker').value));
-      });
-      left.appendChild(cb);
-      const txt = document.createElement('div'); txt.innerHTML = `<div style="font-weight:700">${opt.label}</div><div class="cal">${opt.kcal} kcal</div>`;
-      left.appendChild(txt);
-      lab.appendChild(left);
-      container.appendChild(lab);
-    });
-  });
-  updateCalTotalForDate(date);
-}
-
-/* custom meal */
-function addCustomMeal(){
-  const name = document.getElementById('customMealName').value.trim();
-  const kcal = Number(document.getElementById('customMealCals').value || 0);
-  const target = document.getElementById('customMealTarget').value;
-  if(!name || !kcal){ alert('Enter a name and calories'); return; }
-  const dk = formatISO(new Date(document.getElementById('datePicker').value));
-  if(!state.meals[dk]) state.meals[dk] = {};
-  if(!state.meals[dk].custom) state.meals[dk].custom = [];
-  const id = 'custom_'+Date.now();
-  state.meals[dk].custom.push({id,label:name,kcal,target});
-  // auto-select it
-  state.meals[dk][target] = state.meals[dk][target] || {selected:[]};
-  state.meals[dk][target].selected.push(id);
-  saveState();
-  document.getElementById('customMealName').value=''; document.getElementById('customMealCals').value='';
-  renderForDate(new Date(document.getElementById('datePicker').value));
-}
-
-/* calories sum */
-function caloriesEatenForDate(date){
-  const dk = formatISO(date);
-  const meals = state.meals[dk] || {};
-  let total = 0;
-  ['breakfast','lunch','snack','post','dinner'].forEach(k=>{
-    const entry = meals[k];
-    if(!entry || !entry.selected) return;
-    entry.selected.forEach(sel=>{
-      const def = FOOD_OPTIONS[k].find(x=>x.id===sel);
-      if(def) total += def.kcal; else if(meals.custom){
-        const c = meals.custom.find(x=>x.id===sel); if(c) total += c.kcal;
-      }
-    });
-  });
-  return total;
-}
-function updateCalTotalForDate(date){
-  document.getElementById('calTotal').textContent = caloriesEatenForDate(date) + ' kcal';
-}
-
-/* ===== EXERCISES UI SAVE ===== */
-function renderExerciseForDate(date){
-  const list = document.getElementById('exerciseList'); list.innerHTML = '';
-  const dayNum = getDayNumber(date);
-  const w = WORKOUTS[dayNum];
-  const dk = formatISO(date);
-  if(!state.exercises[dk]) state.exercises[dk] = {};
-  const exState = state.exercises[dk];
-  // session burn default if missing
-  document.getElementById('sessionBurn').value = exState.sessionBurn || 0;
-
-  const title = document.createElement('div'); title.style.marginBottom='8px'; title.innerHTML = `<strong>${w.name}</strong>`;
-  list.appendChild(title);
-
-  w.exercises.forEach((ex, exIdx)=>{
-    const div = document.createElement('div'); div.className = 'ex-item';
-    const t = document.createElement('div'); t.style.fontWeight='700'; t.textContent = ex.title;
-    const meta = document.createElement('div'); meta.className='muted'; meta.textContent = `Sets: ${ex.sets} — Reps: ${ex.reps}`;
-    div.appendChild(t); div.appendChild(meta);
-    const setsRow = document.createElement('div'); setsRow.className = 'sets-row';
-    for(let s=1; s<=ex.sets; s++){
-      const setEl = document.createElement('div'); setEl.className='set';
-      const cb = document.createElement('input'); cb.type='checkbox';
-      const lbl = document.createElement('div'); lbl.style.minWidth='60px'; lbl.textContent = 'Set '+s;
-      const reps = document.createElement('input'); reps.type='number'; reps.placeholder='reps';
-      const weight = document.createElement('input'); weight.type='number'; weight.placeholder='kg';
-      if(exState[exIdx] && exState[exIdx][s]){ const sv = exState[exIdx][s]; cb.checked = !!sv.done; reps.value = sv.reps || ''; weight.value = sv.weight || ''; }
-      function save(){ if(!state.exercises[dk]) state.exercises[dk] = {}; if(!state.exercises[dk][exIdx]) state.exercises[dk][exIdx] = {}; state.exercises[dk][exIdx][s] = {done:!!cb.checked, reps: reps.value?Number(reps.value):null, weight: weight.value?Number(weight.value):null}; saveState(); }
-      cb.addEventListener('change', save); reps.addEventListener('change', save); weight.addEventListener('change', save);
-      setEl.appendChild(cb); setEl.appendChild(lbl); setEl.appendChild(reps); setEl.appendChild(weight);
-      setsRow.appendChild(setEl);
-    }
-    div.appendChild(setsRow);
-    list.appendChild(div);
-  });
-}
-
-/* session burn */
-document.getElementById('sessionBurn').addEventListener('change', ()=>{
-  const dk = formatISO(new Date(document.getElementById('datePicker').value));
-  state.exercises[dk] = state.exercises[dk] || {};
-  state.exercises[dk].sessionBurn = Number(document.getElementById('sessionBurn').value || 0);
-  saveState();
-});
-
-/* ===== ANALYSIS & WEIGHT CHART ===== */
-const weekSelect = document.getElementById('weekSelect');
-for(let i=1;i<=totalWeeks;i++){ const o=document.createElement('option'); o.value=i; o.text='Week '+i; weekSelect.appendChild(o); }
-
-function saveWeekWeight(){
-  const w = Number(weekSelect.value);
-  const kg = Number(document.getElementById('weekWeight').value);
-  if(!kg){ alert('Enter weight'); return; }
-  state.weights = state.weights || {};
-  state.weights['week'+w] = kg; saveState(); drawWeightChart(); updateBanner(); alert('Saved');
-}
-
-function getWeekRangeForDate(date){
-  const diffDays = Math.floor((date - startDate)/(1000*60*60*24));
-  const weekIndex = Math.floor(diffDays/7)+1;
-  const wk = Math.max(1, Math.min(totalWeeks, weekIndex));
-  const start = new Date(startDate.getTime() + (wk-1)*7*24*60*60*1000);
-  const end = new Date(start.getTime() + 6*24*60*60*1000);
-  return {week:wk,start,end};
-}
-
-function summarizeWeekForDate(date){
-  const r = getWeekRangeForDate(date);
-  let totalEaten=0, totalBurn=0, sessions=0;
-  for(let d=new Date(r.start); d<=r.end; d.setDate(d.getDate()+1)){
-    const dd = new Date(d);
-    totalEaten += caloriesEatenForDate(dd);
-    const ex = state.exercises[formatISO(dd)];
-    if(ex && ex.sessionBurn){ totalBurn += Number(ex.sessionBurn); sessions++; }
-    else if(ex){
-      const completed = Object.values(ex).filter(v=>typeof v==='object').flatMap(x=>Object.values(x)).filter(s=>s && s.done).length;
-      if(completed>0){ totalBurn += 400; sessions++; } // conservative
-    }
-  }
-  return {week:r.week,start:r.start,end:r.end,totalEaten,totalBurn,sessions};
-}
-
-function renderAnalysisForDate(date){
-  const wk = summarizeWeekForDate(date);
-  document.getElementById('weeklyCalText').innerHTML = `Week ${wk.week} (${wk.start.toLocaleDateString()} — ${wk.end.toLocaleDateString()}): <strong>${wk.totalEaten} kcal</strong>`;
-  document.getElementById('weeklyBurnText').innerHTML = `${wk.sessions} sessions — <strong>${wk.totalBurn} kcal</strong>`;
-  document.getElementById('weeklyNetText').innerHTML = `<strong>${(wk.totalEaten - wk.totalBurn)} kcal</strong> net`;
-  document.getElementById('weeklyNotes').value = `Week ${wk.week} summary:\nCalories eaten: ${wk.totalEaten} kcal\nEstimated workout burn: ${wk.totalBurn} kcal\nNet: ${wk.totalEaten - wk.totalBurn} kcal\nTarget daily: ${dailyCalorieTarget} kcal`;
-  drawWeightChart();
-}
-
-function drawWeightChart(){
-  const canvas = document.getElementById('weightChart'); const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const user = []; const target = [];
-  for(let i=1;i<=totalWeeks;i++){
-    user.push(state.weights && state.weights['week'+i] ? state.weights['week'+i] : null);
-    target.push(targetStartWeight - ((i-1)*(targetStartWeight-targetEndWeight)/(totalWeeks-1)));
-  }
-  const all = target.concat(user.filter(v=>v!=null));
-  const minV = Math.min(...all)-1; const maxV = Math.max(...all)+1;
-  const h=canvas.height, w=canvas.width;
-  ctx.strokeStyle='rgba(255,255,255,0.06)'; for(let g=0;g<4;g++){ const y=10+g*(h-20)/3; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-  ctx.setLineDash([6,4]); ctx.strokeStyle= '--'; ctx.strokeStyle='#ffd24d'; ctx.beginPath(); target.forEach((v,i)=>{ const x=10+i*(w-20)/(totalWeeks-1), y=10+((maxV-v)/(maxV-minV))*(h-20); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke();
-  ctx.setLineDash([]); ctx.strokeStyle='#0a84ff'; ctx.beginPath(); let started=false;
-  user.forEach((v,i)=>{ if(v==null) return; const x=10+i*(w-20)/(totalWeeks-1), y=10+((maxV-v)/(maxV-minV))*(h-20); if(!started){ ctx.moveTo(x,y); started=true;} else ctx.lineTo(x,y); ctx.fillStyle='#0a84ff'; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); }); ctx.stroke();
-  ctx.fillStyle='#fff'; ctx.font='11px sans-serif'; ctx.fillText('Target', 10, h-2); ctx.fillStyle='#0a84ff'; ctx.fillText('You', 70, h-2);
-  // on track
-  const lastWeekIndex = Math.max(0, ...Object.keys(state.weights||{}).map(k=>Number(k.replace('week',''))));
-  if(lastWeekIndex>0){
-    const actual = state.weights['week'+lastWeekIndex];
-    const t = target[lastWeekIndex-1];
-    const el = document.getElementById('onTrackMsg');
-    if(actual <= t + 0.3) el.innerHTML = `<strong style="color:#7cffb2">On track ✅</strong> — Week ${lastWeekIndex} weight ${actual} kg vs ${t.toFixed(1)} kg`;
-    else el.innerHTML = `<strong style="color:#ff8b8b">Off track ✖</strong> — Week ${lastWeekIndex} weight ${actual} kg vs ${t.toFixed(1)} kg`;
+/* ---------- STATE ---------- */
+function loadUserState(){
+  if(!localStorage.getItem(storageKey())){
+    const blank={meals:{},exercises:{},weights:{},notes:{}};
+    localStorage.setItem(storageKey(),JSON.stringify(blank));
   }
 }
+function getState(){return JSON.parse(localStorage.getItem(storageKey()));}
+function saveState(obj){localStorage.setItem(storageKey(),JSON.stringify(obj));}
 
-/* ===== STREAK & BANNER ===== */
+/* ---------- SIMPLE FOOD + EXERCISE DEMO ---------- */
+const sampleMeals=[
+ {name:"Your standard breakfast",kcal:420},
+ {name:"Grilled chicken lunch",kcal:650},
+ {name:"Protein shake post-WO",kcal:220},
+ {name:"Light dinner paneer + veggies",kcal:480}
+];
+const sampleExercises=[
+ {title:"Bench Press",sets:4,reps:"10–12"},
+ {title:"Lat Pulldown",sets:3,reps:"10–12"},
+ {title:"Squats",sets:4,reps:"10"},
+ {title:"Plank",sets:3,reps:"45 sec"}
+];
+
+/* Render Food */
+function renderFood(){
+ const c=document.getElementById("foodContent");c.innerHTML="";
+ sampleMeals.forEach((m,i)=>{
+   const d=document.createElement("div");
+   d.className="meal-row";
+   d.innerHTML=`<div class='meal-name'>${m.name}</div><div class='cal'>${m.kcal} kcal</div>`;
+   c.appendChild(d);
+ });
+}
+/* Render Exercise */
+function renderExercise(){
+ const c=document.getElementById("exerciseList");c.innerHTML="";
+ sampleExercises.forEach(e=>{
+   const div=document.createElement("div");
+   div.className="ex-item";
+   div.innerHTML=`<div><strong>${e.title}</strong> | Sets:${e.sets} Reps:${e.reps}</div>`;
+   c.appendChild(div);
+ });
+}
+
+/* ---------- ANALYSIS ---------- */
+function renderAnalysis(){
+ const ctx=document.getElementById("weightChart").getContext("2d");
+ ctx.clearRect(0,0,400,160);
+ ctx.fillStyle="#0a84ff";
+ ctx.fillText("Weight progress chart will appear here (per user)",10,80);
+}
+
+/* ---------- BANNER ---------- */
 function updateBanner(){
-  // latest saved weight
-  let latestWeek = 0, latestWeight = null;
-  for(const k in state.weights || {}){
-    const n = Number(k.replace('week',''));
-    if(n > latestWeek){ latestWeek = n; latestWeight = state.weights[k]; }
-  }
-  document.getElementById('currentWeightText').textContent = latestWeight ? `Weight: ${latestWeight} kg` : 'Weight: — kg';
-  document.getElementById('weightDeltaText').textContent = latestWeight ? `Lost: ${(targetStartWeight - latestWeight).toFixed(1)} kg` : 'Lost: — kg';
-  // weeks left
-  const today = new Date(document.getElementById('datePicker').value);
-  const endDate = new Date(startDate.getTime() + (totalWeeks-1)*7*24*60*60*1000);
-  const weeksLeft = Math.max(0, Math.ceil((endDate - today)/(7*24*60*60*1000)));
-  document.getElementById('weeksLeftText').textContent = `Weeks left: ${weeksLeft}`;
-  // streak up to date
-  const streak = computeStreakUpTo(new Date(document.getElementById('datePicker').value));
-  document.getElementById('streakText').textContent = `Streak: ${streak} day${streak===1?'':'s'}`;
-  // day complete toggle reflect current date
-  const dk = formatISO(new Date(document.getElementById('datePicker').value));
-  document.getElementById('dayCompleteToggle').checked = !!(state.completedDays && state.completedDays[dk]);
+ const p=document.getElementById("profileTag");
+ const st=getState();
+ const lastW=st.weights.last||"--";
+ p.textContent=`👤 ${currentUser} | Weight: ${lastW} kg`;
+ document.getElementById("weightDeltaText").textContent=`Lost: — kg`;
+ renderFood();renderExercise();renderAnalysis();
 }
 
-/* toggle day complete */
-document.getElementById('dayCompleteToggle').addEventListener('change', ()=>{
-  const dk = formatISO(new Date(document.getElementById('datePicker').value));
-  state.completedDays = state.completedDays || {};
-  state.completedDays[dk] = !!document.getElementById('dayCompleteToggle').checked;
-  saveState(); updateBanner();
-});
-
-/* compute streak up to a date */
-function computeStreakUpTo(date){
-  let s = 0;
-  for(let i=0;i<365;i++){
-    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate() - i);
-    const k = formatISO(d);
-    if(state.completedDays && state.completedDays[k]) s++; else break;
-  }
-  return s;
+/* ---------- TABS ---------- */
+function showTab(tab){
+ ["food","exercise","analysis"].forEach(k=>{
+   document.getElementById(k+"Panel").style.display=(k===tab)?"block":"none";
+   document.getElementById("tab"+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle("active",k===tab);
+ });
+ if(tab==="analysis")renderAnalysis();
+}
+</script>
+<script>
+/* ---------- PWA Service Worker ---------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('./service-worker.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(err => console.error('Service Worker failed:', err));
+  });
 }
 
-/* ===== EXPORT / IMPORT / CLEAR (side panel) ===== */
-const side = document.getElementById('sidePanel');
-document.getElementById('openSettings').addEventListener('click', ()=>{ side.classList.add('open'); side.setAttribute('aria-hidden','false'); });
-function closeSettings(){ side.classList.remove('open'); side.setAttribute('aria-hidden','true'); }
-
-function exportJSON(){
-  const dataStr = JSON.stringify(state, null, 2);
-  const blob = new Blob([dataStr], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'fit10_backup_v3.json'; a.click(); URL.revokeObjectURL(url);
-}
-
-function importJSON(e){
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = function(ev){
-    try{
-      const obj = JSON.parse(ev.target.result);
-      // merge (replace) local state
-      Object.assign(state, obj);
-      saveState();
-      alert('Imported successfully');
-      location.reload();
-    } catch(err){ alert('Invalid JSON file'); }
-  };
-  reader.readAsText(f);
-}
-
-function clearAllData(){
-  if(confirm('Clear all saved data on this device? This cannot be undone.')){
-    localStorage.removeItem(STORAGE_KEY);
-    location.reload();
-  }
-}
-
-/* ===== RENDER for selected date & tab switching ===== */
-function renderForDate(date){
-  renderMealOptions(date);
-  renderExerciseForDate(date);
-  updateCalTotalForDate(date);
-  if(document.getElementById('analysisPanel').style.display !== 'none') renderAnalysisForDate(date);
+/* ---------- SIMPLE WEIGHT ENTRY DEMO ---------- */
+function promptWeightUpdate(){
+  const newW = prompt("Enter your current weight (kg):","");
+  if(!newW) return;
+  const st = getState();
+  st.weights.last = parseFloat(newW);
+  saveState(st);
   updateBanner();
 }
-function showTab(tab){
-  document.getElementById('foodPanel').style.display='none';
-  document.getElementById('exercisePanel').style.display='none';
-  document.getElementById('analysisPanel').style.display='none';
-  document.getElementById('tabFood').classList.remove('active');
-  document.getElementById('tabExercise').classList.remove('active');
-  document.getElementById('tabAnalysis').classList.remove('active');
-  if(tab==='food'){ document.getElementById('foodPanel').style.display='block'; document.getElementById('tabFood').classList.add('active'); }
-  if(tab==='exercise'){ document.getElementById('exercisePanel').style.display='block'; document.getElementById('tabExercise').classList.add('active'); }
-  if(tab==='analysis'){ document.getElementById('analysisPanel').style.display='block'; document.getElementById('tabAnalysis').classList.add('active'); renderAnalysisForDate(new Date(document.getElementById('datePicker').value)); }
-  renderForDate(new Date(document.getElementById('datePicker').value));
-}
-
-document.getElementById('tabFood').addEventListener('click', ()=>showTab('food'));
-document.getElementById('tabExercise').addEventListener('click', ()=>showTab('exercise'));
-document.getElementById('tabAnalysis').addEventListener('click', ()=>showTab('analysis'));
-
-/* initial render */
-renderForDate(new Date());
-showTab('food');
-drawWeightChart();
-updateBanner();
-
-/* save on unload */
-window.addEventListener('beforeunload', ()=>saveState());
 </script>
+
+<!-- Optional small floating button to update weight -->
+<button onclick="promptWeightUpdate()"
+ style="position:fixed;bottom:18px;right:18px;border:0;border-radius:50%;
+ background:#0a84ff;color:#fff;width:58px;height:58px;
+ font-size:24px;box-shadow:0 4px 14px rgba(0,0,0,0.4);cursor:pointer;">
+⚖️
+</button>
+
 </body>
 </html>
+
